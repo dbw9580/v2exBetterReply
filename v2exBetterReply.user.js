@@ -147,8 +147,9 @@ function bindCitationElements(numPageLoaded){
                 registerCitation(self, citedCommentCellId, numCitedPage);
             }
         }
-        else if((replyNo - 1) % 100 <= commentCells.length){ //cited comment is on the same page, retrieve info directly from this page
-            citedCommentCellId = commentCells.get((replyNo - 1) % 100).id;
+        else { //cited comment is on the same page, retrieve info directly from this page
+            //citedCommentCellId = commentCells.get((replyNo - 1) % 100).id;
+            citedCommentCellId = getCommentCellIdFromReplyNo($(document), replyNo);
             registerCitation(self, citedCommentCellId, numCitedPage);
         }
     });
@@ -156,9 +157,16 @@ function bindCitationElements(numPageLoaded){
 
 
 function getCommentCellIdFromReplyNo(documentRoot, replyNo){
-    return documentRoot.find(".no").filter(function(){
+    var thisReplyNo = documentRoot.find(".no").filter(function () {
         return parseInt($(this).text()) == replyNo;
-    }).parents("div.cell").get(0).id;
+    });
+    if (thisReplyNo.length > 0) {
+        return thisReplyNo.parents("div.cell").get(0).id;
+    }
+    else {
+        return "null";
+    }
+    
 }
 
 function registerCitation(elem, id, numPage){
