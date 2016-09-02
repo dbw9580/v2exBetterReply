@@ -4,11 +4,12 @@
 // @namespace   v2ex.com
 // @description better reply experience for v2ex
 // @include     /^https?:\/\/(\w+\.)?v2ex\.com\/t\//
-// @version     2016-08-27
+// @version     2016-09-02
 // @grant       GM_log
 // @grant       GM_addStyle
 // @run-at      document-end
 // @require     https://code.jquery.com/jquery-2.2.4.min.js
+// @supportURL  https://github.com/dbw9580/v2exBetterReply/
 // ==/UserScript==
 
 "use strict";
