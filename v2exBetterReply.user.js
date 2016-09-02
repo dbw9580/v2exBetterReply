@@ -28,6 +28,13 @@ var REF_PREVIEW_WIDTH = "600px";
 // End of Configuration Section
 //===========================
 
+GM_addStyle(".v2exBR-reply-no-target{background-color: #AAAAAA; color: black !important; cursor: pointer; font-weight:bold;}");
+GM_addStyle(".v2exBR-cited-comment-view{background-color: white; position: absolute; display: none; max-width: "+REF_PREVIEW_WIDTH+";}");
+GM_addStyle(".v2exBR-reply-citation{color: #778087; cursor: pointer;} .v2exBR-reply-citation:hover{color: #4d5256; text-decoration: underline;}");
+GM_addStyle(".v2exBR-cited-comment-view .fr{display: none;}");
+
+/* insert preview block */
+$(document.body).append($("<div class=\"v2exBR-cited-comment-view cell\" id=\"v2exBR_citation_div\"></div>"));
 
 var API = {};
 API.URL = {};
@@ -49,7 +56,6 @@ API.getTopicReplies = function (topicId) {
 API.getTopicReplyIdsInPostedOrder = function (repliesList) {
     var thisReply, i;
     var replyOrderIdMap = [];
-    //var repliesList = API.getTopicReplies(topicId);
 
     //assume that replies returned by API are already in the order of them being posted
     //simply walk through the array.
@@ -116,19 +122,8 @@ function getRelativeTime(absTime) {
     }
 }
 
-
-GM_addStyle(".v2exBR-reply-no-target{background-color: #AAAAAA; color: black !important; cursor: pointer; font-weight:bold;}");
-GM_addStyle(".v2exBR-cited-comment-view{background-color: white; position: absolute; display: none; max-width: "+REF_PREVIEW_WIDTH+";}");
-GM_addStyle(".v2exBR-reply-citation{color: #778087; cursor: pointer;} .v2exBR-reply-citation:hover{color: #4d5256; text-decoration: underline;}");
-GM_addStyle(".v2exBR-cited-comment-view .fr{display: none;}");
-
-/* insert preview block */
-$(document.body).append($("<div class=\"v2exBR-cited-comment-view cell\" id=\"v2exBR_citation_div\"></div>"));
-
-
-
 var numCurrentPage = Math.ceil(parseInt($(".no").eq(0).text()) / 100);
-var citedPages = {};
+var threadUrl = window.location.href.match(/^.+\/t\/\d+/)[0];
 var commentCells = $("div.cell, div.inner").filter(function(){
     return this.id.startsWith("r");
 });
@@ -147,9 +142,6 @@ for (var i = startNo + 1; i < endNo; i++){
         hiddenReplyIds.push(thisReplyId);
     }
 }
-
-var citedPagesNos = [];
-var threadUrl = window.location.href.match(/^.+\/t\/\d+/)[0];
 
 /* parse reference */
 commentCells.find("div.reply_content")
@@ -177,7 +169,6 @@ $(".no").hover(function(){
 
 
 $(".v2exBR-reply-citation").hover(function(){
-
     var self = this;
     var commentCellId = $(self).attr("v2exBR-commentCellId");
     var numCitedPage = parseInt($(self).attr("v2exBR-citedPage"));
