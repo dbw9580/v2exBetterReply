@@ -16,7 +16,7 @@
 // Configuration Section
 //
 // Set this to true to enable display of comments by blocked users.
-// This now only takes effect on comments referenced on the same page, 
+// This now only takes effect on comments referenced on the same page,
 // due to API restrictions, in multi-page threads, a comment referenced
 // on a different page that should be blocked, will still be displayed.
 // This may be fixed in future releases.
@@ -46,7 +46,7 @@ API.getTopicReplies = function (topicId) {
 
     return result;
 };
-API.getTopicReplyIdsInPostedOrder = function (repliesList) { 
+API.getTopicReplyIdsInPostedOrder = function (repliesList) {
     var thisReply, i;
     var replyOrderIdMap = [];
     //var repliesList = API.getTopicReplies(topicId);
@@ -61,67 +61,47 @@ API.getTopicReplyIdsInPostedOrder = function (repliesList) {
 };
 
 function markReplyTrueOrder(replyOrderIdMap, repliesDivList) {
-    console.log("d");
     var lastReplyIndex = parseInt($(repliesDivList).find(".no").eq(0).text()) - 1;
-    console.log("e");
     var thisReplyId;
     $(repliesDivList).each(function (index) {
         thisReplyId = this.id.match(/^r_(\d+)/)[1];
-        console.log("f");
         while (thisReplyId != replyOrderIdMap[lastReplyIndex].toString()) {
-            console.log("g", thisReplyId, index, replyOrderIdMap[lastReplyIndex], lastReplyIndex);
             if(lastReplyIndex < replyOrderIdMap.length){
-                lastReplyIndex++;    
+                lastReplyIndex++;
             }
             else{
-                console.log("h");
                 return true;
             }
-            
-            
         }
-        console.log("c", thisReplyId, lastReplyIndex);
         $(this).attr("v2exBR-true-order", 1 + lastReplyIndex++);
     });
 }
 
-function adjustFloorNo(repliesDivList) { 
+function adjustFloorNo(repliesDivList) {
     $(repliesDivList).each(function(){
        var thisReplyTrueOrder = $(this).attr("v2exBR-true-order");
-        console.log("ii", thisReplyTrueOrder);
-       $(this).find(".no").text(thisReplyTrueOrder);
+        $(this).find(".no").text(thisReplyTrueOrder);
     });
 }
 
 function inflatePreviewBlock(reply, previewDiv) {
-    console.log("w", reply);
-    console.log("o");
     var cc = $(commentCells).eq(0).clone();
-    console.log("p");
     $(cc).find("img.avatar").attr("src", reply.member.avatar_normal);
-    console.log("s");
     $(cc).find("strong>a.dark").attr("href", "/member/" + reply.member.username).text(reply.member.username);
-    console.log("t");
     $(cc).find("strong+span.fade.small").remove();
-    console.log("u");
     $(cc).find("strong").after("&nbsp;&nbsp;<span class=\"fade small\">" + getRelativeTime(reply.last_modified) + "</span>&nbsp;&nbsp;<span class=\"small fade\">" + (reply.thanks != 0 ? `♥ ${reply.thanks}` : "") + "</span>");
-    console.log("v");
     $(cc).find(".reply_content").html(reply.content_rendered);
-    console.log("q");
     $(previewDiv).html($(cc).html());
-    console.log("r");
     return $(previewDiv);
 }
 
 function getRelativeTime(absTime) {
-    
     var now = parseInt(Date.now() / 1000);
     var then = parseInt(absTime);
-    console.log("ee", now, then);
     var days = Math.floor((now - then) / (3600 * 24));
     var hours = Math.floor((now - then) / 3600)  - days * 24;
-    var mins = Math.floor((now - then) / 60) - days * 24 * 60 - hours * 60; 
-  
+    var mins = Math.floor((now - then) / 60) - days * 24 * 60 - hours * 60;
+
     if (days > 0) {
         return days + " 天前";
     }
@@ -146,34 +126,27 @@ GM_addStyle(".v2exBR-cited-comment-view .fr{display: none;}");
 $(document.body).append($("<div class=\"v2exBR-cited-comment-view cell\" id=\"v2exBR_citation_div\"></div>"));
 
 
-console.log("ff");
 
 var numCurrentPage = Math.ceil(parseInt($(".no").eq(0).text()) / 100);
 var citedPages = {};
 var commentCells = $("div.cell, div.inner").filter(function(){
     return this.id.startsWith("r");
 });
-console.log("gg");
 var topicId = window.location.href.match(/^.+\/t\/(\d+)/)[1];
 var repliesList = API.getTopicReplies(topicId);
 var replyOrderIdMap = API.getTopicReplyIdsInPostedOrder(repliesList);
 
-console.log("x");
 var startId = parseInt(commentCells.eq(0).get(0).id.substring(2));
 var endId = parseInt(commentCells.eq(-1).get(0).id.substring(2));
-console.log("z");
 var startNo = replyOrderIdMap.indexOf(startId);
 var endNo = replyOrderIdMap.indexOf(endId);
-console.log("y", startId, endId, startNo, endNo, replyOrderIdMap);
 var hiddenReplyIds = [];
 for (var i = startNo + 1; i < endNo; i++){
     var thisReplyId = replyOrderIdMap[i];
-    console.log("dd", thisReplyId);
-    if ($("#r_" + thisReplyId).length == 0) {
+        if ($("#r_" + thisReplyId).length == 0) {
         hiddenReplyIds.push(thisReplyId);
     }
 }
-console.log("cc", hiddenReplyIds);
 
 var citedPagesNos = [];
 var threadUrl = window.location.href.match(/^.+\/t\/\d+/)[0];
@@ -185,7 +158,6 @@ commentCells.find("div.reply_content")
         var replacementSpan = "<span class=\"v2exBR-reply-citation\" v2exBR-commentCellId=\"null\" v2exBR-citedPage=\"0\">";
         content = content.replace(/&gt;&gt;\d+(?=\s|<br)/g, replacementSpan + "$&" + "</span>");
         $(this).html(content);
-        
     });
 
 markReplyTrueOrder(replyOrderIdMap, commentCells);
@@ -205,38 +177,26 @@ $(".no").hover(function(){
 
 
 $(".v2exBR-reply-citation").hover(function(){
-    console.log("k");
-    
+
     var self = this;
     var commentCellId = $(self).attr("v2exBR-commentCellId");
     var numCitedPage = parseInt($(self).attr("v2exBR-citedPage"));
     var replyNo = parseInt($(self).attr("v2exBR-order"));
 
-    console.log("l", commentCellId, numCitedPage, replyNo);
     if (commentCellId === "null") return;
-    console.log("m");
     if (commentCellId === "blocked") {
-        console.log("n");
         $("#v2exBR_citation_div").html("引用的回复被隐藏或来自已屏蔽的用户。")
-        .css({
-            top:$(self).offset().top,
-            left:$(self).offset().left + $(self).width()
-        })
-        .fadeIn(100);
-        
+            .css({
+                top:$(self).offset().top,
+                left:$(self).offset().left + $(self).width()
+            })
+            .fadeIn(100);
+
         return;
     }
-    /*
-    if(citedPages[numCitedPage] === undefined){
-        var citedPageRoot = window.document;
-    }
-    else{
-        var citedPageRoot = citedPages[numCitedPage];
-    }
-    */
-    /*var citationHTML = $("#"+commentCellId, citedPageRoot).html();*/
+
     var divPosTopOffset = window.getComputedStyle(self).getPropertyValue("font-size").match(/(\d+)px/)[1];
-    
+
     inflatePreviewBlock(repliesList[replyNo - 1], $("#v2exBR_citation_div"))
         .css({
             top:$(self).offset().top,
@@ -259,9 +219,9 @@ $(".v2exBR-reply-citation").click(function(){
         }, 500);
     }
     else{
-        window.location.href = threadUrl + "?p=" + numCitedPage + "&v2exBR_commentCellId=" + commentCellId; 
+        window.location.href = threadUrl + "?p=" + numCitedPage + "&v2exBR_commentCellId=" + commentCellId;
     }
-    
+
 });
 
 (function(){
@@ -290,7 +250,7 @@ function bindCitationElements(replyOrderIdMap){
         else {
             registerCitation(this, "blocked", numCitedPage, replyNo);
         }
-        
+
     });
 }
 
@@ -305,7 +265,6 @@ function getCommentCellIdFromReplyNo(documentRoot, replyNo){
     else {
         return "null";
     }
-    
 }
 
 function registerCitation(elem, id, numPage, order){
