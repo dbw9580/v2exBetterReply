@@ -162,10 +162,12 @@ $(".no").hover(function(){
     $(this).addClass("v2exBR-reply-no-target");
 }, function(){
     $(this).removeClass("v2exBR-reply-no-target");
-}).click(function(){
+}).click(function(e){
     var username = $(this).parent().next().next().children("a").text();
     var commentNo = $(this).text();
     makeCitedReply(username, commentNo);
+    //to prevent the vanilla feature provided by v2ex.js to scroll up to the reply
+    e.stopImmediatePropagation();
 });
 
 
@@ -286,5 +288,20 @@ function makeCitedReply(username, commentNo){
     moveEnd($("#reply_content"));
 }
 
+//copied from v2ex.js in case this script gets executed before v2ex.js
+//is loaded
+var moveEnd = function (obj) {
+    obj.focus();
+    obj = obj.get(0);
+    var len = obj.value.length;
+    if (document.selection) {
+        var sel = obj.createTextRange();
+        sel.moveStart('character', len);
+        sel.collapse();
+        sel.select();
+    } else if (typeof obj.selectionStart == 'number' && typeof obj.selectionEnd == 'number') {
+        obj.selectionStart = obj.selectionEnd = len;
+    }
+}
 
 
