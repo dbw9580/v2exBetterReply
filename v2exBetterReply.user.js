@@ -49,7 +49,9 @@ API.getTopicReplies = function (topicId) {
         dataType: "json",
         success: function (data) { result = data },
         error: function () { return },
-        async: false
+        async: false,
+        // important! to prevent browser caching results returned by api which is vollatile
+        cache: false
     });
 
     return result;
