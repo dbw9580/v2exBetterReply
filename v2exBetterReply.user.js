@@ -4,7 +4,7 @@
 // @namespace   v2ex.com
 // @description better reply experience for v2ex
 // @include     /^https?:\/\/(\w+\.)?v2ex\.com\/t\//
-// @version     2016-09-02
+// @version     2017-10-20
 // @grant       GM_log
 // @grant       GM_addStyle
 // @run-at      document-end
