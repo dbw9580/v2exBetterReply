@@ -4,7 +4,7 @@
 // @namespace   v2ex.com
 // @description better reply experience for v2ex
 // @include     /^https?:\/\/(\w+\.)?v2ex\.com\/t\//
-// @version     2017-10-20
+// @version     2019-06-12
 // @grant       GM_log
 // @grant       GM_addStyle
 // @run-at      document-end
@@ -25,6 +25,9 @@ var SHOW_BLOCKED_REF = false;
 
 // Set this to your preferred max width of the reference preview floating block.
 var REF_PREVIEW_WIDTH = "600px";
+
+// Reference marker: the default is "#", change to whatever you like.
+var REF_MARKER = "#";
 
 // End of Configuration Section
 //===========================
@@ -95,10 +98,10 @@ function adjustFloorNo(repliesDivList) {
 
 function inflatePreviewBlock(reply, previewDiv) {
     var cc = $(commentCells).eq(0).clone();
-    $(cc).find("img.avatar").attr("src", reply.member.avatar_normal);
+    $(cc).find("img.avatar").attr("src", reply.member.avatar_normal.replace(/mini/, "normal")); // avatar urls returned by api contain only the mini version
     $(cc).find("strong>a.dark").attr("href", "/member/" + reply.member.username).text(reply.member.username);
-    $(cc).find("strong+span.fade.small").remove();
-    $(cc).find("strong").after("&nbsp;&nbsp;<span class=\"fade small\">" + getRelativeTime(reply.last_modified) + "</span>&nbsp;&nbsp;<span class=\"small fade\">" + (reply.thanks != 0 ? `♥ ${reply.thanks}` : "") + "</span>");
+    $(cc).find("strong+span.fade.small").remove(); 
+    $(cc).find(".ago").text(getRelativeTime(reply.last_modified));
     $(cc).find(".reply_content").html(reply.content_rendered);
     $(previewDiv).html($(cc).html());
     return $(previewDiv);
@@ -151,7 +154,7 @@ commentCells.find("div.reply_content")
     .each(function(index){
         var content = $(this).html();
         var replacementSpan = "<span class=\"v2exBR-reply-citation\" v2exBR-commentCellId=\"null\" v2exBR-citedPage=\"0\">";
-        content = content.replace(/&gt;&gt;\d+(?=\s|<br)/g, replacementSpan + "$&" + "</span>");
+        content = content.replace(/(?:#|&gt;&gt;)\d+/g, replacementSpan + "$&" + "</span>");
         $(this).html(content);
     });
 
@@ -232,7 +235,7 @@ $(".v2exBR-reply-citation").click(function(){
 
 function bindCitationElements(replyOrderIdMap){
     $("span.v2exBR-reply-citation").each(function(){
-        var replyNo = parseInt($(this).text().match(/>>(\d+)/)[1]);
+        var replyNo = parseInt($(this).text().match(/(?:>>|#)(\d+)/)[1]);
         var citedCommentCellId = "";
         var numCitedPage = Math.ceil(replyNo / 100);
 
@@ -274,7 +277,7 @@ function makeCitedReply(username, commentNo){
     var oldContent = replyContent.val();
 
     var userTag = "@" + username + " ";
-    var commentTag = ">>" + commentNo + " \n";
+    var commentTag = REF_MARKER + commentNo + " \n";
 
     var newContent = commentTag + userTag;
     if(oldContent.length > 0){
