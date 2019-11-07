@@ -100,7 +100,7 @@ function inflatePreviewBlock(reply, previewDiv) {
     var cc = $(commentCells).eq(0).clone();
     $(cc).find("img.avatar").attr("src", reply.member.avatar_normal.replace(/mini/, "normal")); // avatar urls returned by api contain only the mini version
     $(cc).find("strong>a.dark").attr("href", "/member/" + reply.member.username).text(reply.member.username);
-    $(cc).find("strong+span.fade.small").remove(); 
+    $(cc).find("span.fade.small").filter(function(i, e){return e.innerText.startsWith("♥")}).remove();
     $(cc).find(".ago").text(getRelativeTime(reply.last_modified));
     $(cc).find(".reply_content").html(reply.content_rendered);
     $(previewDiv).html($(cc).html());
