@@ -4,7 +4,7 @@
 // @namespace   v2ex.com
 // @description better reply experience for v2ex
 // @include     /^https?:\/\/(\w+\.)?v2ex\.com\/t\//
-// @version     2019-06-12
+// @version     2019-11-07
 // @grant       GM_log
 // @grant       GM_addStyle
 // @run-at      document-end
@@ -33,12 +33,12 @@ var REF_MARKER = "#";
 //===========================
 
 GM_addStyle(".v2exBR-reply-no-target{background-color: #AAAAAA; color: black !important; cursor: pointer; font-weight:bold;}");
-GM_addStyle(".v2exBR-cited-comment-view{background-color: white; position: absolute; display: none; max-width: "+REF_PREVIEW_WIDTH+";}");
+GM_addStyle(".v2exBR-cited-comment-view{box-shadow: 0 0 3px rgba(0,0,0,.1); position: absolute; display: none; max-width: "+REF_PREVIEW_WIDTH+";}");
 GM_addStyle(".v2exBR-reply-citation{color: #778087; cursor: pointer;} .v2exBR-reply-citation:hover{color: #4d5256; text-decoration: underline;}");
 GM_addStyle(".v2exBR-cited-comment-view .fr{display: none;}");
 
 /* insert preview block */
-$(document.body).append($("<div class=\"v2exBR-cited-comment-view cell\" id=\"v2exBR_citation_div\"></div>"));
+$(document.body).append($("<div class=\"v2exBR-cited-comment-view cell box\" id=\"v2exBR_citation_div\"></div>"));
 
 var API = {};
 API.URL = {};
